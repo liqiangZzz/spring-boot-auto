@@ -1,4 +1,4 @@
-package com.lq.testSelector;
+package com.lq.selector;
 
 import com.lq.enable.EnableDefineService;
 import com.lq.service.CacheService;
@@ -18,10 +18,10 @@ import org.springframework.context.annotation.Configuration;
         packages = {"com.lq.service"},
         services = {CacheService.class}  // 可以指定要导入的具体服务
 )
-public class JavaConfig {
+public class ImportSelectorTest {
 
     public static void main(String[] args) {
-        ApplicationContext ac = new AnnotationConfigApplicationContext(JavaConfig.class);
+        ApplicationContext ac = new AnnotationConfigApplicationContext(ImportSelectorTest.class);
 
         System.out.println("=== All Beans ===");
         for (String beanDefinitionName : ac.getBeanDefinitionNames()) {

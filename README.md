@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-这是一个基于 Spring Boot 2.5.8 的示例项目，演示了如何创建和使用自定义的 Spring Boot Starter。该项目集成了 Redisson 客户端，提供了自动配置功能，并展示了条件化 Bean 注册的使用方式。
+这是一个基于 Spring Boot 2.5.8 的示例项目，演示了如何创建和使用自定义的 Spring Boot Starter。该项目集成了 Redisson 客户端，提供了自动配置功能，并展示了多种 Spring 高级特性，包括条件化 Bean 注册、ImportSelector 和 ImportBeanDefinitionRegistrar 的使用。
 
 ## 技术栈
 
@@ -18,15 +18,31 @@
 src/
 ├── main/
 │   ├── java/com/lq/
-│   │   ├── autoconfigure/          # 自动配置类
+│   │   ├── autoconfigure/                  # 自动配置类
 │   │   │   ├── CoreAutoConfiguration.java
 │   │   │   └── YourConfiguration.java
-│   │   ├── controller/             # 控制器层
+│   │   ├── controller/                     # 控制器层
 │   │   │   └── RedisController.java
+│   │   ├── enable/                         # 自定义启用注解
+│   │   │   ├── EnableCustomServices.java
+│   │   │   └── EnableDefineService.java
+│   │   ├── importBeanDefinitionRegistrar/  # 自定义Bean定义注册器
+│   │   │   └── MyImportBeanDefinitionRegistrar.java
+│   │   ├── selector/                       # 自定义导入选择器
+│   │   │   └── MyDefineImportSelector.java
+│   │   ├── service/                        # 服务类
+│   │   │   ├── CacheService.java
+│   │   │   └── LoggerService.java
+│   │   ├── testImportBeanDefinitionRegistrar/  # 测试配置
+│   │   │   └── AnnotationTestConfig.java
+│   │   ├── testSelector/                   # 测试配置
+│   │   │   └── JavaConfig.java
 │   │   └── SpringBootAutoApplication.java  # 启动类
 │   └── resources/
 │       └── application.properties          # 应用配置
 └── test/                                   # 测试代码
+    └── java/com/lq/
+        └── SpringBootAutoApplicationTests.java
 ```
 
 ## 核心功能
@@ -42,12 +58,20 @@ lq.redisson.ssl=false
 ```
 
 ### 2. 自定义 Bean 配置
-项目中包含两个配置类：
+项目展示了多种自定义 Bean 注册方式：
 
-1. [YourConfiguration](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/autoconfigure/YourConfiguration.java#L14-L19) - 创建了一个名为 `primaryProductService` 的 [ProductService](file:///Users/Java/project/Spring/spring-boot-auto/spring-boot-core/src/main/java/com/lq/service/ProductService.java#L8-L17) Bean
+1. [YourConfiguration](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/autoconfigure/YourConfiguration.java#L14-L19) - 使用 `@Configuration` 和 `@Bean` 注解创建 `primaryProductService` Bean
 2. `ConditionalConfig` (通过 [@Import](file:///Users/Java/project/Spring/spring-boot-auto/spring-boot-core/src/main/java/com/lq/config/ConditionalConfig.java#L1-L21) 导入) - 条件化创建 `conditionalProductService` Bean
+3. [MyImportBeanDefinitionRegistrar](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/importBeanDefinitionRegistrar/MyImportBeanDefinitionRegistrar.java#L16-L25) - 通过编程方式注册 `loggerService` 和 `cacheService` Bean
+4. [MyDefineImportSelector](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/selector/MyDefineImportSelector.java#L22-L55) - 动态选择要导入的 Bean
 
-### 3. Redis 控制器
+### 3. 自定义启用注解
+项目提供了两个自定义启用注解：
+
+1. [@EnableCustomServices](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/enable/EnableCustomServices.java#L13-L19) - 通过 [@Import](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/enable/EnableCustomServices.java#L16-L16) 导入 [MyImportBeanDefinitionRegistrar](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/importBeanDefinitionRegistrar/MyImportBeanDefinitionRegistrar.java#L16-L25)
+2. [@EnableDefineService](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/enable/EnableDefineService.java#L14-L25) - 通过 [@Import](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/enable/EnableDefineService.java#L18-L18) 导入 [MyDefineImportSelector](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/selector/MyDefineImportSelector.java#L22-L55)
+
+### 4. Redis 控制器
 [RedisController](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/controller/RedisController.java#L16-L25) 提供了一个简单的 REST 接口 `/query`，用于查询 Redis 中 key 的数量。
 
 ## 快速开始
@@ -125,6 +149,10 @@ GET http://localhost:8080/query
 1. 在 [controller](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/controller) 包下创建新的控制器类
 2. 使用 `@RestController` 注解标记控制器
 3. 添加相应的请求映射方法
+
+### 使用自定义注解
+1. 在配置类上使用 [@EnableCustomServices](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/enable/EnableCustomServices.java#L13-L19) 启用自定义服务
+2. 在配置类上使用 [@EnableDefineService](file:///Users/Java/project/Spring/spring-boot-auto/src/main/java/com/lq/enable/EnableDefineService.java#L14-L25) 启用可配置的服务
 
 ## 构建和部署
 

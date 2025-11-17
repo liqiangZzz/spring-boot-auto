@@ -1,4 +1,4 @@
-package com.lq.testImportBeanDefinitionRegistrar;
+package com.lq.importBeanDefinitionRegistrar;
 
 import com.lq.enable.EnableCustomServices;
 import com.lq.service.CacheService;
@@ -15,10 +15,10 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableCustomServices  // 使用自定义注解
-public class AnnotationTestConfig {
+public class ImportBeanDefinitionRegistrarTest {
 
     public static void main(String[] args) {
-        ApplicationContext ac = new AnnotationConfigApplicationContext(AnnotationTestConfig.class);
+        ApplicationContext ac = new AnnotationConfigApplicationContext(ImportBeanDefinitionRegistrarTest.class);
 
         System.out.println("=== 通过注解注册的Bean ===");
         String[] beanNames = ac.getBeanDefinitionNames();
